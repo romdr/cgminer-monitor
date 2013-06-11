@@ -37,4 +37,5 @@ https://github.com/shazbits/cgminer-monitor/blob/master/LICENSE.txt
 
 Romain Dura
 http://www.shazbits.com
+
 BTC 1Kcn1Hs76pbnBpBQHwdsDmr3CZYcoCAwjj
