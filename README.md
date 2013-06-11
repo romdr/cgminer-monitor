@@ -31,6 +31,11 @@ cgminer-monitor.py somecommand someoptionalparameter
  	- cgminer-monitor.py gpu 0
  	- See cgminer's API-README for all available commands
 
+
+### Credits
+CGMinerClient class based on  WyseNynja's gist https://gist.github.com/WyseNynja/1500780
+
+
 ## ISC License
 
 https://github.com/shazbits/cgminer-monitor/blob/master/LICENSE.txt
