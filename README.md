@@ -12,6 +12,7 @@ usage: cgminer-monitor.py [command] [parameter]
 cgminer-monitor.py
  - Monitors cgminer by checking a few critical values
  - Emails if something is wrong
+ - Restarts cgminer if the GPU is sick or dead
  - Runs a dead simple http server that only serves a page with the results of the monitor (identical to the console output with a nice display)
  - Could support multi-gpus very easily (see comment in the code)
  - CTRL+C to stop everything
