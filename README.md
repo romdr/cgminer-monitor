@@ -45,3 +45,6 @@ Romain Dura
 http://www.shazbits.com
 
 BTC 1Kcn1Hs76pbnBpBQHwdsDmr3CZYcoCAwjj
+
+![myviewcounter](http://www.shazbits.com/viewcounter-monitor.png)
+
