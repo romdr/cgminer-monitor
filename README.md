@@ -14,6 +14,7 @@ cgminer-monitor.py
  - Emails if something is wrong
  - Restarts cgminer if the GPU is sick or dead
  - Runs a dead simple http server that only serves a page with the results of the monitor (identical to the console output with a nice display)
+ - Monitors MMFCE pools and display the current balance in their currencies
  - Could support multi-gpus very easily (see comment in the code)
  - CTRL+C to stop everything
 

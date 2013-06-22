@@ -14,6 +14,8 @@ import os
 import threading
 import SimpleHTTPServer
 import SocketServer
+import urllib2
+
 
 #
 # Config
@@ -36,6 +38,20 @@ monitor_send_email_alerts = True
 monitor_max_temperature = 85
 monitor_min_mhs_scrypt = 0.5
 monitor_min_mhs_sha256 = 500
+monitor_enable_pools = True
+
+# MMCFE pools (www.wemineltc.com, dgc.mining-foreman.org, megacoin.miningpool.co, etc.)
+# Replace the URLs and/or API keys by your own, add as many pools as you like
+pools = [
+    {
+        'url': 'http://www.digicoinpool.com/api?api_key=1234567890',
+        'cur': 'DGC'
+    },
+    {
+        'url': 'http://www.wemineltc.com/api?api_key=1234567890',
+        'cur': 'LTC'
+    },
+]
 
 
 #
@@ -139,6 +155,7 @@ def StartMonitor(client):
 
         result = client.command('pools', None)
         if result:
+            output += 'Pool URL : %s\n' % (result['POOLS'][0]['Stratum URL'])
             warning = ' <----- /!\\' if result['POOLS'][0]['Status'] != 'Alive' else ''
             must_send_email = True if warning != '' else must_send_email
             output += 'Pool     : %s%s\n' % (result['POOLS'][0]['Status'], warning)
@@ -184,7 +201,7 @@ def StartMonitor(client):
             print 'Restarting'
             result = client.command('restart', None)
 
-        if must_send_email and monitor_send_email_alerts:
+        if must_send_email and monitor_send_email_alerts and uptime > 10:
             SendEmail(from_addr=email_from, to_addr_list=[email_to], cc_addr_list=[],
                 subject=email_subject,
                 message=output,
@@ -192,7 +209,10 @@ def StartMonitor(client):
                 password=email_password)
             time.sleep(monitor_wait_after_email)
 
-        time.sleep(monitor_interval)
+        # Sleep by increments of 1 second to catch the keyboard interrupt
+        for i in range(monitor_interval):
+            time.sleep(1)
+
         os.system('cls')
 
 
@@ -203,6 +223,10 @@ def StartMonitor(client):
 class CGMinerRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
+
+        if self.path == '/favicon.ico':
+            return
+
         self.send_header("Content-type", "text/html")
         self.end_headers()
 
@@ -212,8 +236,26 @@ class CGMinerRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
         html_output = shared_output[:-1] # one too many \n
         shared_output_lock.release()
 
+        # Get balance from pools
+        pools_output = ''
+        if monitor_enable_pools:
+            td_div = '<td style="padding:8px; padding-left:10%; border-top:1px solid #dddddd; background-color:#ff6600; line-height:20px;">'
+            for pool in pools:
+                try:
+                    response = urllib2.urlopen(pool['url'])
+                    data = json.load(response)
+                    pools_output += '\n</td></tr>\n<tr>' + td_div + '\n' + 'pool' + '</td>' + td_div + pool['cur'] + ' %.6f' % (float(data['confirmed_rewards']))
+                except urllib2.HTTPError as e:
+                    pools_output += '\n</td></tr>\n<tr>' + td_div + '\n' + 'pool' + '</td>' + td_div + pool['cur'] + ' Error: ' + str(e.code)
+                except urllib2.URLError as e:
+                    pools_output += '\n</td></tr>\n<tr>' + td_div + '\n' + 'pool' + '</td>' + td_div + pool['cur'] + ' Error: ' + e.reason
+                except:
+                    pools_output += '\n</td></tr>\n<tr>' + td_div + '\n' + 'pool' + '</td>' + td_div + pool['cur'] + ' Error: unsupported pool?'
+
+        # Format results from the monitor
         td_div = '<td style="padding:8px; padding-left:10%; border-top:1px solid #dddddd; line-height:20px;">'
         html_output = ('\n</td></tr>\n<tr>' + td_div + '\n').join(html_output.replace(': ', '</td>' + td_div).split('\n'))
+        html_output += pools_output
         html = """
         <html>
             <head>
@@ -221,7 +263,7 @@ class CGMinerRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
                 <title>cgminer monitor</title>
             </head>
             <body style="margin:0; font-family:Helvetica Neue,Helvetica,Arial,sans-serif;">
-                <table style="vertical-align:middle; max-width:100%; width:100%; margin-bottom:20px; border-spacing:2px; border-color:gray; font-size:medium; border-collapse: collapse;">
+                <table style="vertical-align:middle; max-width:100%; width:100%; margin-bottom:20px; border-spacing:2px; border-color:gray; font-size:small; border-collapse: collapse;">
                     <tr><td style="padding:8px; padding-left:10%; border-top:1px solid #dddddd; line-height:20px;">
         """ + html_output + """
                     </td></tr>
