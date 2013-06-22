@@ -37,6 +37,8 @@ cgminer-monitor.py somecommand someoptionalparameter
 ### Credits
 CGMinerClient class based on  WyseNynja's gist https://gist.github.com/WyseNynja/1500780
 
+### Official forum thread
+https://bitcointalk.org/index.php?topic=232232
 
 ## ISC License
 
