@@ -38,7 +38,7 @@ monitor_send_email_alerts = True
 monitor_max_temperature = 85
 monitor_min_mhs_scrypt = 0.5
 monitor_min_mhs_sha256 = 500
-monitor_enable_pools = True
+monitor_enable_pools = False
 
 # MMCFE pools (www.wemineltc.com, dgc.mining-foreman.org, megacoin.miningpool.co, etc.)
 # Replace the URLs and/or API keys by your own, add as many pools as you like
