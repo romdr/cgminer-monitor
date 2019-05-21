@@ -1,4 +1,4 @@
-cgminer-monitor
+cgminer-monitor [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=shazbits_cgminer-monitor&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=shazbits_cgminer-monitor)
 ===============
 
 Simple monitor script for cgminer in python. Console display, http server, email alerts. No additional modules required.
